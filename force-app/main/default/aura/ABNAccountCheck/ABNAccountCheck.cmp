@@ -2,7 +2,7 @@
   <aura:attribute access="global" name="recordId" type="String" />
   <aura:attribute access="global" name="parentId" type="String" />
   <aura:attribute access="global" name="abnRec" type="Object" />
-  <aura:attribute access="global" name="recordTypeId"  type="Id" />  
+  <aura:attribute access="global" name="recordTypeId"  type="Id" />   
   
   <aura:attribute access="global" name="visible" type="Boolean" default="false" />
   <aura:attribute access="global" name="result" type="Object" />

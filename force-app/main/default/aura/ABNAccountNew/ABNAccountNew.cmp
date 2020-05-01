@@ -1,0 +1,23 @@
+<!--
+	Author: 	Sai Natarajan
+	
+	Description: 
+		 ABN Lookup for Account record type
+	
+	Test Class: N.A.
+	Pages: N.A.
+	History: Initial creation 09/01/2020 
+
+-->  
+<aura:component controller="ABNDialogController"  
+	            implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,lightning:actionOverride,lightning:hasPageReference" access="global" >
+ <aura:attribute access="public" type="string" name="recordId" /> 
+ <aura:attribute access="public" name="selectedRecordTypeId" type="Id" />
+ <aura:attribute access="public" name="selectedRecordTypeName" type="Name" />
+ <aura:attribute access="public" name="IsRecordTypeId" type="boolean" default='true' />
+ <aura:attribute access="public" name="OpenABN" type="boolean" default='false' />   
+ <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+    <div class="{!v.OpenABN ? '' : 'slds-hide'}">
+    <c:ABNSearch aura:id="ABNSearch" visible="{!v.OpenABN}" selectedRecordTypeId="{!v.selectedRecordTypeId}"/>      
+  </div> 
+</aura:component>

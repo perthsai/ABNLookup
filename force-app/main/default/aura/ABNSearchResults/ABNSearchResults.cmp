@@ -1,0 +1,104 @@
+<aura:component >
+	<aura:attribute access="public" name="dataRows" type="Object[]" />
+	<aura:attribute access="private" name="data" type="Object" />
+	<aura:handler name="change" value="{!v.dataRows}" action="{!c.searchResultsChange}" />
+   <aura:registerEvent name="ABNResultClicked" type="c:ABNSearchResultEvent"/>		
+
+	<aura:if isTrue="{! and(v.dataRows != null, v.dataRows.length > 0)}">
+		<div style="overflow-y: auto; overflow-x: hidden; max-height: 250px;">
+			<table class="slds-table slds-table_striped">
+			  <thead>
+			    <tr class="slds-text-title_caps">
+			      <th scope="col" style="max-width: 220px;">
+			        <div class="slds-truncate" title="Name">Name</div> 
+			      </th>
+                  <th scope="col" >
+			        <div class="slds-truncate" title="ABN Type">ABN Type</div> 
+			      </th>
+			      <th scope="col">
+			        <div class="slds-truncate" title="ABN">ABN</div>
+			      </th>
+			      <!--
+				  <th scope="col">
+			        <div class="slds-truncate" title="Current">Current</div>
+			      </th> -->
+			      <th scope="col">
+			        <div class="slds-truncate" title="State">State</div>
+			      </th>
+			      <th scope="col">
+			        <div class="slds-truncate" title="Postcode">PC</div>
+			      </th><!--
+			      <th scope="col">
+			        <div class="slds-truncate" title="Score">Score</div>
+			      </th>-->
+			    </tr>
+			  </thead>
+			  <tbody>
+			  	<aura:iteration items="{!v.dataRows}" var="recData" indexVar="recId">
+				    <tr>
+				      <th scope="row" data-label="Name" style="max-width: 200px;">
+				        <div class="slds-truncate" title="{!recData.result.name}">									
+									<aura:if isTrue="{!recData.ABNType == 'Entity Name'}">										
+										<lightning:icon iconName="utility:company" size="small" title="Entity Name"/>
+									</aura:if>
+									<aura:if isTrue="{!recData.ABNType == 'Business Name'}">										
+										<lightning:icon iconName="utility:case" size="small" title="Business Name"/>
+									</aura:if>
+									<aura:if isTrue="{!recData.ABNType == 'Trading Name'}">										
+										<lightning:icon iconName="custom:custom90" size="small" title="Trading Name"/>
+									</aura:if>
+									<aura:if isTrue="{!recData.ABNType == 'Other Name'}">										
+										<lightning:icon iconName="utility:spinner" size="small" title="Other Name"/>
+									</aura:if>&nbsp;
+				        	<aura:if isTrue="{!recData.result.relatedAccount.Id}">				        		
+										<a href="javascript:void(0);" onclick="" id="{!recData.result.relatedAccount.Id}" title="Open existing acount">
+												{!recData.result.name} <!--{!c.openExistingAccount}-->  
+										</a>				        		
+				        		<aura:set attribute="else">
+												{!recData.result.name}				        			
+				        		</aura:set>
+				        	</aura:if>				        	
+				        </div>
+				      </th>
+                      <td data-label="ABN Type">
+				        <div class="slds-truncate" title="{!recData.ABNType}">{!recData.ABNType}      
+				        </div>
+				      </td>  
+				      <td data-label="ABN">
+				        <div class="slds-truncate" title="{!recData.Abn}">
+				        	<aura:if isTrue="{!recData.result.relatedAccount.Id}">
+				        		{!recData.AbnNumber}				        	
+					        	<aura:set attribute="else">
+											<a href="javascript:void(0);" onclick="{!c.createNewAccount}"  id="{!recId}" 
+												title="Use ABN information for new account">
+						        		{!recData.AbnNumber}
+						        	</a>	<!--"{!c.createNewAccount}"	-->		        
+					        	</aura:set>
+				        	</aura:if>	
+				        </div>
+				      </td>
+				      <!--
+                      <td data-label="Current">
+				        <div class="slds-truncate" title="{!recData.IsCurrent}">{!recData.IsCurrent}</div>
+				      </td> -->
+				      <td data-label="State">
+				        <div class="slds-truncate" title="{!recData.address.stateCode}">{!recData.address.stateCode}</div>
+				      </td>
+				      <td data-label="Postcode">
+				        <div class="slds-truncate" title="{!recData.address.postcode}">{!recData.address.postcode}</div>
+				      </td>
+				      <!--<td data-label="Score">
+				        <div class="slds-truncate" title="{!recData.result.score}">{!recData.result.score}</div>
+				      </td>-->
+				    </tr>
+				  </aura:iteration>	    
+			  </tbody>
+			</table>
+		</div>
+		<aura:set attribute="else">
+			<div class="slds-text-color_weak slds-text-body_small">
+				No results to display
+			</div>			
+		</aura:set>
+	</aura:if>	
+</aura:component>

@@ -1,0 +1,3 @@
+<apex:page standardController="Quote" docType="html-5.0" title="Webmerge Certificate: {!quote.Name}">
+    <webm:WebmergeWizard record="{!Quote}" />
+</apex:page>

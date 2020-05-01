@@ -1,0 +1,3 @@
+<apex:page controller="LookupByUrlParamController" action="{!redirectToAccount}">
+  Retrieving data and redirecting...
+</apex:page>

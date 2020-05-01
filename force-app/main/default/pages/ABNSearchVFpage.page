@@ -1,0 +1,32 @@
+<apex:page standardController="Account">
+        <apex:includeLightning />
+
+        <div id="ABN" />
+
+         <script> 
+
+            $Lightning.use(“c:ABNApp”, function() {
+
+                $Lightning.createComponent(
+
+                    “c:ABNSearch”,
+
+                    {},
+
+                    “Con”,
+
+                    function(cmp) {
+
+                        console.log(“Component is created!”);
+
+                        console.log(cmp);
+
+                    });
+
+                });
+
+        
+
+          </script>
+
+    </apex:page>

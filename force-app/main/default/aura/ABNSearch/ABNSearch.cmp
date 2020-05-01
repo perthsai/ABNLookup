@@ -1,0 +1,138 @@
+<!--
+	Author: 	Sai Natarajan
+	
+	Description: 
+		LC for ABN Lookup		
+	
+	Test Class: N.A.
+	Pages: N.A.
+	History: Initial creation 09/01/2020 
+
+-->  
+<aura:component controller="ABNDialogController" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute access="public" type="string" name="recordId" /> 
+    <aura:attribute access="public" name="selectedRecordTypeId" type="Id" />
+    <aura:attribute access="public" name="selectedRecordTypeName" type="Name" />
+    <aura:attribute access="public" name="IsRecordTypeId" type="boolean" default='true' />
+    <aura:attribute access="global" name="visible" type="Boolean" default="false" />
+	<aura:attribute access="public" type="string" name="searchStr"/>
+	<aura:attribute access="public" type="object" name="_tools" />
+
+	<aura:attribute access="private" type="Object" name="searchResults" />
+    <aura:attribute access="public" name="searchResultsRow" type="Object[]" />
+	<aura:attribute access="private" type="string" name="searchLabelText" />
+
+	<aura:attribute access="public" type="integer" name="postcode" />
+	<aura:attribute access="public" type="string" name="state" />
+		
+	<aura:attribute access="public" name="advancedMode" type="Boolean" default="true" />
+    <aura:attribute access="public" name="advancedSearchbyABNName" type="Boolean" default="false" />
+	<aura:attribute access="private" name="states" type="String[]" default="ACT,NSW,NT,QLD,SA,TAS,VIC,WA" />
+
+	<aura:attribute access="public" name="showDialog" type="Boolean" default="false"/>
+	<aura:attribute access="public" name="confirmation" type="Object" default="{visible:false}"/>
+    <aura:attribute access="private" name="abnRec" type="Object" />  
+	<aura:attribute access="public" name="dlgResult" type="Object" />
+
+  <aura:attribute access="public" name="recordData" type="Object" />
+
+  <aura:handler name="ABNResultClicked" event="c:ABNSearchResultEvent" action="{!c.searchResultClicked}"/>    
+  <!-- <aura:handler name="change" value="{!v.showDialog}" action="{!c.dlgVisibilityChanged}"/> -->
+
+  <force:recordData aura:id="currentRecord"
+                    recordId="{!v.recordId}"
+                    targetFields="{!v.recordData}"
+                    layoutType="FULL"
+                    recordUpdated="{!c.recordUpdated}"/>
+
+	<aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+	<aura:handler name="change" value="{!v.searchStr}" action="{!c.searchTextChange}" />
+  <aura:if isTrue="{!or(v.visible,v.recordId)}"> 
+	<lightning:card title="ABN Lookup service" iconName="standard:account">
+    <!--<aura:set attribute="actions"> 
+	    <lightning:buttonStateful labelWhenOff="Advanced" labelWhenOn="Advanced" labelWhenHover="Advanced"
+				iconNameWhenOff="utility:search" iconNameWhenOn="utility:search" iconNameWhenHover="utility:search"
+				state="{!v.advancedMode }"
+				onclick="{!c.btnToggleAdvanced }"
+				variant="{! v.advancedMode ? 'brand' : 'neutral'}" />
+    </aura:set>-->
+    <p class="slds-p-horizontal_small">
+    	<div class="slds-form slds-form_compound">				
+	      <lightning:input aura:id="inputSearch" type="search" name="search" onchange="{!c.onSearchChange}" required="true"  label="{!v.searchLabelText}" />
+
+      <!--	<aura:if isTrue="{!v.advancedMode}"> -->
+      		<fieldset class="slds-form-element">
+	      		<div class="slds-form-element__group">
+		      	  <div class="slds-form-element__row" style="padding-right: .6em;">
+			      		<div class="slds-form-element slds-size_1-of-2" style="max-width: 10em;">
+			      			<lightning:input aura:id="postcodeInput" label="Postcode" value="{!v.postcode}" 
+			      				onchange="{!c.onPostcodeChange}" maxlength="4"
+			      				messageWhenBadInput="Enter all 4 digids of the postcode." />
+			      		</div>
+			      		<div class="slds-form-element slds-size_1 -of-2" style="max-width: 12em;">
+							    <lightning:select aura:id="stateSelect" label="Select a State"  value="{!v.state}"
+							    	 onchange="{!c.onSateChange}">
+						        <option value="">-- Select --</option>
+							        <aura:iteration items="{!v.states}" var="state">
+							            <option value="{!state}" text="{!state}" selected="{!state == v.postcode}"></option>
+							        </aura:iteration>
+							    </lightning:select>
+							  </div>
+                              <div class="slds-form-element slds-size_1 -of-2" style="max-width: 18em;"> 
+                                 
+                               <ui:inputCheckbox aura:id="checkbox" label="Narrow ABN Name Search"  change="{!c.onCheck}"/>
+                               
+							</div>
+							</div>
+  					      </div>
+					</fieldset>
+      	<!--</aura:if>-->
+
+	    </div>
+	  </p>
+    <aura:set attribute="footer">      
+		<div style="position:relative; text-align: left;">
+			<div class="slds-text-heading_small">ABN Search results:</div>
+            <aura:if isTrue="{!v.advancedSearchbyABNName}">
+			    <c:ABNSearchResults dataRows="{!v.searchResults}"/>
+                  <aura:set attribute="else">
+                    <c:ABNSearchResults dataRows="{!v.searchResults.searchResultsRecord}"/>  
+                  </aura:set>
+            </aura:if>    
+		  	<div class="slds-spinner_container slds-hide" aura:id="ABNSearchProgress">
+			    <div class="slds-spinner slds-spinner--medium slds-spinner_brand" aria-hidden="false" role="status">
+			      <div class="slds-spinner__dot-a"></div>
+			      <div class="slds-spinner__dot-b"></div>
+			    </div>
+		  	</div>
+		</div>   
+		<span style="font-size: xx-small;">      
+			<lightning:icon iconName="utility:info_alt" size="xx-small" alternativeText="Information"/>
+			Provided by the 
+			<a href="https://www.abr.business.gov.au/" target="_blank">Australian Business Register</a>
+		</span> 
+    </aura:set>
+      
+	</lightning:card>
+      
+	<div class="{!v.showDialog ? '' : 'slds-hide'}">
+    <c:ABNAccountCheck aura:id="AbnDialog" visible="{!v.showDialog}" abnRec="{!v.abnRec}"
+    	recordId="{!v.recordId}" result="{!v.dlgResult}" recordData="{!v.recordData}" recordTypeId="{!v.selectedRecordTypeId}"/> 
+  </div> 
+ 
+	<!-- Dialog that asks the end user for confirmation of updating records -->
+	<div class="{!v.confirmation.visible ? '' : 'slds-hide'}">
+		<c:ABNConfirmation abnRec="{!v.confirmation.abnRec}">
+			<aura:set attribute="closeButton">
+				<lightning:buttonIcon class="slds-modal__close slds-button_icon-inverse" 
+		        	iconName="utility:close" variant="bare-inverse" title="close" type="button"
+            	alternativeText="Close window" size="large" onclick="{!c.closeDlg}" />
+			</aura:set>
+      <button class="slds-button slds-button_neutral" onclick="{!c.closeDlg}">Cancel</button>
+      <button class="slds-button slds-button_brand" onclick="{!c.submitDlg}">Save</button>
+		</c:ABNConfirmation>
+  </div> 
+ </aura:if>     
+  <!-- End confirmation dialog --> 
+</aura:component>

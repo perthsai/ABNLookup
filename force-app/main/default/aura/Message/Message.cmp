@@ -1,0 +1,34 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global">
+    <!--
+<aura:attribute access="global" name="title" type="string" description="The message title that will appear"/>
+-->
+    <aura:attribute access="global" name="message" required="true" type="string" description="The message text that will appear"/>
+    <aura:attribute access="global" name="messageType" required="true" type="string" description="The message text that will appear"/>
+    <aura:attribute access="global" name="iconOverride" type="string" description="Icon if any" default=""/>
+    <aura:attribute access="global" name="fontSizeOverride" type="string" description="Font size if other then default" default=""/>
+    <aura:attribute access="global" name="iconSizeOverride" type="string" description="Icon size if other then default" default="x-small"/>
+    <aura:attribute access="global" name="allowClose" type="boolean" description="Allow user to close the message" default="true"/>
+    
+    <aura:attribute access="private" name="showDlg" type="boolean" default="true" />
+    <aura:attribute access="private" name="ui" type="Object" />
+    
+	<aura:handler name="init" value="{!this}" action="{!c.onInit}" /> 
+    <aura:handler name="change" value="{!v.messageType}" action="{!c.onInit}" />
+    <aura:handler name="change" value="{!v.message}" action="{!c.onInit}" />
+     
+    <aura:if isTrue="{!v.showDlg}">
+        <div class="{! 'slds-notify slds-notify_alert slds-theme_alert-texture ' + v.ui.theme}" role="alert">
+            <span class="slds-assistive-text">{!v.messageType}</span>
+            <lightning:icon class="{! 'slds-icon_container slds-m-right_x-small ' + v.ui.span}" variant="inverse" title="{!v.messageType}" 
+                            iconName="{!'utility:'+ (v.iconOverride != '--default--' ? v.iconOverride : v.ui.icon)}" 
+                            alternativeText="{!v.messageType}" 
+                            size="{!v.iconSizeOverride ? v.iconSizeOverride : 'x-small'}"/>   
+            <h2><span style="{! v.fontSizeOverride ? ('font-size: ' + v.fontSizeOverride+'em;'): ''}">{!v.message}</span></h2>
+            <aura:if isTrue="{!v.allowClose}">
+            	<lightning:buttonIcon class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" 
+                    iconName="utility:close" variant="bare-inverse" title="close" 
+                    alternativeText="Close" onclick="{!c.closeDlg}" type="button"/>   
+            </aura:if>
+        </div>
+    </aura:if>
+</aura:component>

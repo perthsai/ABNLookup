@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="Container for ABNSearch event attributes" >
+    <aura:attribute name="name" type="String" />
+    <aura:attribute name="record" type="Object" default="null" />
+</aura:event>

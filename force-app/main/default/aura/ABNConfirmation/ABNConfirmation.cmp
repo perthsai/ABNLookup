@@ -1,0 +1,45 @@
+<aura:component >
+    <aura:attribute access="public" name="abnRec" type="Object" />
+    <aura:attribute access="public" name="closeButton" type="Aura.Component[]" />
+    
+		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" 
+			aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+		    <div class="slds-modal__container">
+		      <header class="slds-modal__header">
+		        {!v.closeButton}
+		        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Account Update</h2>
+		      </header>
+		      <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+		        <p>You are about to update this account with the following details</p>
+                <p/>
+    
+    		<div class="slds-text-title_caps">Account details:</div>
+                <div class="slds-box">
+                  <lightning:tile label="{!v.abnRec.result.name}" >
+                    <aura:set attribute="media">
+                        <lightning:icon iconName="standard:account"/>
+                    </aura:set>
+                    <dl class="slds-dl_horizontal">                          
+                      <dt class="slds-dl_horizontal__label">
+                          <p class="slds-truncate" title="ABN">ABN:</p>
+                      </dt>
+                      <dd class="slds-dl_horizontal__detail slds-tile__meta">
+                          <p class="slds-truncate" title="{!v.abnRec.AbnNumber}">{!v.abnRec.AbnNumber}</p>
+                      </dd>
+                      <dt class="slds-dl_horizontal__label">
+                          <p class="slds-truncate" title="ABN Type">ABN Type:</p>
+                      </dt>
+                      <dd class="slds-dl_horizontal__detail slds-tile__meta">
+                          <p class="slds-truncate" title="{!v.abnRec.ABNType}">{!v.abnRec.ABNType}</p>
+                      </dd>
+                    </dl>
+                  </lightning:tile>
+                </div>
+          </div>
+		      <footer class="slds-modal__footer slds-modal__footer_directional">
+            {!v.body}
+		      </footer>
+		    </div>
+		  </section>
+		  <div class="slds-backdrop slds-backdrop_open"></div>  
+</aura:component>

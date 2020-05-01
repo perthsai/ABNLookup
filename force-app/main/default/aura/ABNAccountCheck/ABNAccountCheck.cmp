@@ -1,0 +1,190 @@
+<aura:component controller="ABNDialogController">
+  <aura:attribute access="global" name="recordId" type="String" />
+  <aura:attribute access="global" name="parentId" type="String" />
+  <aura:attribute access="global" name="abnRec" type="Object" />
+  <aura:attribute access="global" name="recordTypeId"  type="Id" />  
+  
+  <aura:attribute access="global" name="visible" type="Boolean" default="false" />
+  <aura:attribute access="global" name="result" type="Object" />
+  
+  <aura:attribute access="private" name="parentData" type="Account" />
+  <aura:attribute access="public" name="recordData" type="Object" />
+  <aura:attribute access="private" name="cmpData" type="Object" />
+
+  <aura:attribute access="private" name="errData" type="Object" /> 
+
+  <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+  <aura:handler name="change" value="{!v.abnRec}" action="{!c.getData}"/>
+  <aura:handler name="change" value="{!v.cmpData.results}" action="{!c.parseResults}"/>
+
+  <aura:if isTrue="{!v.visible}">
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" 
+      class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <header class="slds-modal__header" aria-controls="duplicateModal" >
+          <lightning:buttonIcon class="slds-modal__close slds-button_icon-inverse" iconName="utility:close" variant="bare-inverse" title="close" 
+            alternativeText="Close window" size="large" onclick="{!c.closeDlg}" type="button"/>
+          <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{! v.recordId ? 'Update' : 'Create' } Account based on ABN Details</h2>
+        </header>            
+        
+        <!-- error message-->
+        <aura:if isTrue="{!v.errData}">
+          <c:Message message="{!v.errData.message}" messageType="{!v.errData.messageType}" allowClose="{!v.errData.close}" />
+        </aura:if>
+<!--         <div aura:id="errMsg" class="{! v.cmpData.errMsg ? '' : 'slds-hide'}">
+            <c:Message message="{!v.cmpData.errMgs}" messageType="error" />
+        </div>
+ --> 
+        <!-- end error message -->
+        <aura:if isTrue="{!v.cmpData.results}">
+          <div class="slds-modal__content" id="modal-content-id-1" style="overflow-y: hidden;">
+            <div class="{!v.cmpData.activePageIndex != 0 ? 'slds-hide': ''}">
+              <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+
+                <p>
+                  You are about to {! v.recordId ? 'update' : 'create'} this account with the following details.
+                </p>
+                <br/>
+                <div class="slds-text-title_caps">Account details:</div>
+                <div class="slds-box">
+                  <lightning:tile label="{!v.abnRec.result.name}" >
+                    <aura:set attribute="media">
+                        <lightning:icon iconName="standard:account"/>
+                    </aura:set>
+                    <dl class="slds-dl_horizontal">                          
+                      <dt class="slds-dl_horizontal__label">
+                          <p class="slds-truncate" title="ABN">ABN:</p>
+                      </dt>
+                      <dd class="slds-dl_horizontal__detail slds-tile__meta">
+                          <p class="slds-truncate" title="{!v.abnRec.AbnNumber}">{!v.abnRec.AbnNumber}</p>
+                      </dd>
+                      <dt class="slds-dl_horizontal__label">
+                          <p class="slds-truncate" title="ABN Type">ABN Type:</p>
+                      </dt>
+                      <dd class="slds-dl_horizontal__detail slds-tile__meta">
+                          <p class="slds-truncate" title="{!v.abnRec.ABNType}">{!v.abnRec.ABNType}</p>
+                      </dd>
+                      
+                            
+                        
+                      <!--<aura:if isTrue="{!v.recordData.OwnerId}">
+                        <dt class="slds-dl_horizontal__label">
+                          <p class="slds-truncate" title="Owner">Owner:</p>
+                        </dt>
+                        <dd class="slds-dl_horizontal__detail slds-tile__meta">
+                          <p class="slds-truncate" title="{!v.recordData.Owner.Name}">
+                            <a href="{! '/'+v.recordData.OwnerId}">{!v.recordData.Owner.Name}</a>
+                          </p>
+                        </dd>
+                      </aura:if>-->
+                    </dl>
+                  </lightning:tile>
+                </div>
+
+               <br/>
+               <!-- <p>
+                    This following account will be created/set as the Parent Account.
+                </p>                
+                <br/>
+                
+                <div class="slds-text-title_caps">Parent Account Details:</div>
+                <div class="slds-box">
+                  <lightning:tile label="{!v.parentData.Name}" >
+                    <aura:set attribute="media">
+                        <lightning:icon iconName="standard:account"/>
+                    </aura:set>
+                    <dl class="slds-dl_horizontal">                          
+                      <dt class="slds-dl_horizontal__label">
+                          <p class="slds-truncate" title="ABN">ABN:</p>
+                      </dt>
+                      <dd class="slds-dl_horizontal__detail slds-tile__meta">
+                          <p class="slds-truncate" title="{!v.parentData.ABN__c}">{!v.parentData.ABN__c}</p>
+                      </dd>
+                      <dt class="slds-dl_horizontal__label">
+                          <p class="slds-truncate" title="ABN Type">ABN Type:</p>
+                      </dt>
+                      <dd class="slds-dl_horizontal__detail slds-tile__meta">
+                          <p class="slds-truncate" title="{!v.parentData.ABN_Type__c}">{!v.parentData.ABN_Type__c}</p>
+                      </dd>
+                      <aura:if isTrue="{!v.parentData.OwnerId}">
+                        <dt class="slds-dl_horizontal__label">
+                          <p class="slds-truncate" title="Owner">Owner:</p>
+                        </dt>
+                        <dd class="slds-dl_horizontal__detail slds-tile__meta">
+                          <p class="slds-truncate" title="{!v.parentData.Owner.Name}">
+                            <a href="{! '/'+v.parentData.OwnerId}">{!v.parentData.Owner.Name}</a>
+                          </p>
+                        </dd>
+                      </aura:if>
+                    </dl>
+                  </lightning:tile>
+                </div> -->
+              </div>
+
+              <!--
+              <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <div class="slds-text-title_caps">All related Business Names</div>
+                <div class="slds-box" style="max-height:220px; overflow-y: auto;">
+                  <ul class="slds-has-dividers_bottom">
+                    <aura:iteration items="{!v.cmpData.results.businessName}" var="item">
+                      <li class="{! 'slds-item' + (item.name == v.abnRec.result.name ? ' marked-item' : '')}" >
+                        {!item.name} • {!item.effectiveFrom}
+                      </li>
+                    </aura:iteration>
+                  </ul>
+                </div>
+              </div>
+              -->
+
+              <div class="slds-modal__content slds-p-around_medium">
+                <p>
+                  Click Yes to proceed.
+                </p>
+              </div>
+            </div>
+
+            <aura:if isTrue="{!v.cmpData.activePageIndex == 1}">
+              <div style="height: 520px;">              
+                  
+              </div>
+            </aura:if>  
+          </div>   
+
+          <aura:set attribute="else">
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+              <div class="slds-align_absolute-center" style="height: 4rem;">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                  <span class="slds-assistive-text">Loading</span>
+                  <div class="slds-spinner__dot-a"></div>
+                  <div class="slds-spinner__dot-b"></div>
+                </div>
+              </div>
+            </div>
+          </aura:set>       
+
+        </aura:if>
+
+        <footer class="slds-modal__footer slds-modal__footer_directional">
+            <button class="slds-button slds-button_neutral" type="button" aria-controls="duplicateModal" onclick="{!c.closeDlg}">Cancel</button>
+            <!--
+            <aura:if isTrue="{!v.cmpData.activePageIndex gt 0}">
+              <button class="slds-button slds-button_neutral" type="button" onclick="{!c.prevPage}">Previous</button>            
+            </aura:if>
+            <aura:if isTrue="{!v.cmpData.activePageIndex lt 1}">
+              <button class="slds-button slds-button_brand" type="button" onclick="{!c.nextPage}"
+                disabled="">Next</button>
+            </aura:if>
+            <aura:if isTrue="{!v.cmpData.activePageIndex == 1}">
+              <button class="slds-button slds-button_brand" type="submit" onclick="{!c.submit}">Finish</button>
+            </aura:if>
+            -->
+            <button class="slds-button slds-button_brand" type="submit" 
+              onclick="{!c.submitBtn}" disabled="{! !v.cmpData.results}"> 
+              Yes
+            </button>
+        </footer>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"/>
+  </aura:if>
+</aura:component>

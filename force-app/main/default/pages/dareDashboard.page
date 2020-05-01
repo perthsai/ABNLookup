@@ -1,0 +1,3 @@
+<apex:page standardController="GME_Consultant__c">
+<iframe src="https://caltexau.sharepoint.com/_layouts/15/sharepoint.aspx" />
+</apex:page>
